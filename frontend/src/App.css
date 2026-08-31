@@ -1,0 +1,20 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f0e8 0%, #e8dccc 100%);
+  padding: 20px;
+}
+
+button {
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* Add some nice styling */
+header {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
