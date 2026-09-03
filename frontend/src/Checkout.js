@@ -53,7 +53,7 @@ const Checkout = ({ cart, onRemove, onClear }) => {
                 description: `Order #${data.orderId}`,
                 order_id: data.orderId,
                 handler: function (response) {
-                    alert(`✅ Payment Successful!\nPayment ID: ${response.razorpay_payment_id}\nOrder ID: ${response.razorpay_order_id}`);
+                    alert(Payment Successful!\nPayment ID: ${response.razorpay_payment_id}\nOrder ID: ${response.razorpay_order_id}`);
                     setLoading(false);
                     onClear(); // Clear cart after successful payment
                 },
@@ -72,7 +72,7 @@ const Checkout = ({ cart, onRemove, onClear }) => {
 
         } catch (error) {
             console.error('Payment failed:', error);
-            alert('❌ Payment failed: ' + (error.response?.data?.error || error.message));
+            alert(' Payment failed: ' + (error.response?.data?.error || error.message));
             setLoading(false);
         }
     };
