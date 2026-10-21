@@ -1,70 +1,125 @@
-# ChaiSutra — AI Agentic Commerce Demo
+# ChaiSutra — Agentic Commerce Platform
 
-Built for **Razorpay AI Buildathon — Track 1: AI Growth & Agentic Commerce**
+ChaiSutra is an AI-powered commerce application that enables conversational shopping and autonomous, budget-aware purchasing through integrated AI services and Razorpay test-mode payments.
 
-ChaiSutra is a tea shop demo showing how AI agents can shop, negotiate budgets, and transact autonomously — with every money action bounded, gated, and auditable.
+The platform combines a React storefront, a FastAPI-based AI service, and a Node.js backend to support product discovery, cart optimization, agent-driven purchasing, and server-side payment authorization.
 
-## What it does
+## Core Features
 
-- **Conversational checkout** — customers chat naturally to browse and buy tea
-- **Agent-readable catalog** — structured API so other AI agents can query products without parsing chat
-- **AI-to-AI commerce** — an autonomous buyer agent (`ai-buyer.py`) searches, selects, and purchases within a budget, with no human in the loop
-- **Upsell & cross-sell** — contextual product suggestions based on what's in the cart
-- **Bounded & gated payments** — every order is checked against a spending limit server-side, before any payment can complete
-- **Audit trail** — every agent decision (search, selection, purchase, block) is logged with reasoning and timestamp
-- **Graceful failure handling** — if an order exceeds the allowed budget, payment is blocked with a clear reason — no money moves, and the user can retry or clear the cart
+- **Conversational Shopping:** Browse the tea catalog, discover products, and manage purchases through a natural-language chat interface.
+- **Structured Product API:** Exposes product information through machine-readable endpoints, enabling AI clients to retrieve and evaluate products programmatically.
+- **Autonomous Purchasing Agent:** Implements an AI buyer (`ai-buyer.py`) that searches the catalog, evaluates product options, and initiates purchases within a configured spending budget.
+- **Context-Aware Recommendations:** Suggests complementary products and relevant upgrades based on cart contents to support cross-selling and upselling.
+- **Server-Side Budget Enforcement:** Validates order totals against authorized spending limits before allowing payment processing to proceed.
+- **Decision Audit Logging:** Records agent activities, including product searches, selections, purchase attempts, and blocked transactions, with timestamps and decision context.
+- **Failure Handling:** Rejects purchases that exceed authorized limits and provides actionable feedback, allowing users to modify their cart and retry.
 
-## Architecture
-Frontend (React) ──────► AI Server (FastAPI) ──────► Backend (Node/Express)
+## System Architecture
 
-Chat UI - Product catalog - Razorpay order creation
-AI Agent UI - Chat logic - Budget validation
-Cart/Checkout - AI-to-AI endpoints - Payment gating
-- Upsell logic
-
-  
-- **`frontend/`** — React app (chat, AI agent dashboard, cart, checkout)
-- **`ai-server/`** — FastAPI service: product catalog, chat, AI-to-AI endpoints, upsell logic
-- **`backend/`** — Express service: Razorpay integration, order creation, budget enforcement
-
-## Safety & governance
-
-Every purchase attempt is checked against a maximum budget **at the server level**, independent of the frontend. If an order exceeds the limit:
-- The payment is blocked before any charge is created
-- The reason and amounts (total, max allowed, exceeded by) are shown
-- The user can retry with a smaller cart or clear it
-
-This ensures the AI agent can never move money outside its authorized bounds.
-
-## Tech stack
-
-React · FastAPI (Python) · Express (Node.js) · Razorpay (test mode)
-
-## Running locally
-
-```bash
-# AI Server
-cd ai-server
-pip install -r requirements.txt
-python main.py          # runs on :8000
-
-# Backend
-cd backend
-npm install
-npm start                # runs on :5000
-
-# Frontend
-cd frontend
-npm install
-npm start                 # runs on :3000
+```text
+┌──────────────────────────────────┐
+│          React Frontend          │
+│ Chat · Catalog · Cart · Checkout │
+│          Agent Dashboard         │
+└────────────────┬─────────────────┘
+                 │ HTTP / REST APIs
+                 ▼
+┌──────────────────────────────────┐
+│         FastAPI AI Service       │
+│ Product Discovery · Chat Logic   │
+│ Buyer Agent APIs · Recommendations│
+└────────────────┬─────────────────┘
+                 │ HTTP / REST APIs
+                 ▼
+┌──────────────────────────────────┐
+│        Node.js / Express         │
+│ Order Creation · Budget Checks   │
+│       Razorpay Integration       │
+└────────────────┬─────────────────┘
+                 │
+                 ▼
+┌──────────────────────────────────┐
+│        Razorpay Test Mode        │
+│        Payment Order Flow        │
+└──────────────────────────────────┘
 ```
 
-Add a `.env` file in `ai-server/` and `backend/` with your Razorpay test-mode keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`).
+## Project Structure
 
-## Demo video
+- **`frontend/`** — React-based shopping interface with conversational checkout, product browsing, cart management, and an AI agent dashboard.
+- **`ai-server/`** — Python/FastAPI service responsible for conversational interactions, product discovery, AI-to-AI commerce endpoints, and recommendation logic.
+- **`backend/`** — Node.js/Express service responsible for order creation, Razorpay integration, and server-side spending-limit enforcement.
 
-Submitted separately as part of the application form.
+## Transaction Safety and Auditability
 
-## Track & problem statement
+ChaiSutra implements a server-enforced authorization boundary for agent-initiated purchases.
 
-**Track 1: AI Growth & Agentic Commerce** — build an agent that grows merchant revenue or makes a merchant transactable by an AI buyer, end to end, on Razorpay test-mode APIs.
+Before a payment can proceed, the backend validates the order amount against the configured spending limit. This check does not depend on frontend validation, preventing a modified client interface from bypassing the budget restriction.
+
+When a purchase exceeds the authorized limit, the system:
+
+- Blocks the payment flow before initiating the corresponding payment transaction.
+- Reports the order total, configured limit, and excess amount.
+- Records the blocked attempt for audit and debugging.
+- Allows the customer to adjust the cart and submit a new purchase request.
+
+This design keeps autonomous purchasing within explicit spending constraints while maintaining visibility into agent decisions and transaction outcomes.
+
+## Technology Stack
+
+| Component | Technology |
+|---|---|
+| Frontend | React |
+| AI Service | Python, FastAPI |
+| Backend | Node.js, Express |
+| Payment Integration | Razorpay Test Mode |
+| API Communication | HTTP / REST |
+
+## Local Development
+
+### Prerequisites
+
+- Node.js and npm
+- Python 3
+- Razorpay test-mode API credentials
+
+### 1. Start the AI Service
+
+```bash
+cd ai-server
+pip install -r requirements.txt
+python main.py
+```
+
+Runs on `http://localhost:8000`.
+
+### 2. Start the Backend
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+Runs on `http://localhost:5000`.
+
+### 3. Start the Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Runs on `http://localhost:3000`.
+
+### Environment Configuration
+
+Create `.env` files in `ai-server/` and `backend/` and configure the required environment variables.
+
+```env
+RAZORPAY_KEY_ID=your_test_key_id
+RAZORPAY_KEY_SECRET=your_test_key_secret
+```
+
+Use Razorpay test-mode credentials and never commit secret keys to version control.
